@@ -1,6 +1,6 @@
 /**
  * StreetJS - A lightweight, walkable panorama viewer
- * @version 0.1
+ * @version 0.2
  * @license MIT
  * @author https://github.com/nichind/streetJS
  */
@@ -9,6 +9,8 @@ class StreetJS {
         // Default configuration
         this.config = {
             startPanorama: null,
+            startDirection: 0, // degrees
+            touchMultiplier: 2.5, // for touch rotation speed
             language: 'auto',
             showCompass: true, // buggy
             globalNorth: 0, // % of the image width that represents north for all panoramas, can be overridden by settings of individual panoramas
@@ -45,9 +47,9 @@ class StreetJS {
         
         // Load initial panorama
         if (this.config.startPanorama && this.config.panoramas[this.config.startPanorama]) {
-            this.loadPanorama(this.config.startPanorama);
+            this.loadPanorama(this.config.startPanorama, this.config.startDirection || 0);
         } else if (Object.keys(this.config.panoramas).length > 0) {
-            this.loadPanorama(Object.keys(this.config.panoramas)[0]);
+            this.loadPanorama(Object.keys(this.config.panoramas)[0], this.config.startDirection || 0);
         } else {
             console.error('StreetJS: No panoramas defined in configuration');
             this.showError('No panoramas defined');
@@ -648,7 +650,7 @@ class StreetJS {
         this.element.addEventListener('touchmove', (e) => {
             if (e.touches.length === 1) {
                 const touchX = e.touches[0].pageX;
-                const dx = touchX - this.touchStartX;
+                const dx = (touchX - this.touchStartX) * this.config.touchMultiplier; // Use touch multiplier for sensitivity 
                 this.touchStartX = touchX;
                 this.backgroundPositionX -= dx;
                 this.updateRotation();
