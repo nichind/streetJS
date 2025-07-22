@@ -1,6 +1,6 @@
 /**
  * StreetJS - A lightweight, walkable panorama viewer
- * @version 0.2.2
+ * @version 0.2.3
  * @license MIT
  * @author https://github.com/nichind/streetJS
  */
@@ -11,6 +11,7 @@ class StreetJS {
             startPanorama: null,
             startDirection: 0, // degrees
             touchMultiplier: 2.5, // for touch rotation speed
+            dragMultiplier: 1.5, // for mouse drag rotation speed
             language: 'auto',
             showCompass: true, // buggy
             globalNorth: 0, // % of the image width that represents north for all panoramas, can be overridden by settings of individual panoramas
@@ -631,7 +632,7 @@ class StreetJS {
         document.addEventListener('mousemove', (e) => {
             if (!this.isDragging) return;
             e.preventDefault();
-            const dx = e.pageX - this.startX;
+            const dx = (e.pageX - this.startX) * this.config.dragMultiplier; // Use drag multiplier for sensitivity
             this.startX = e.pageX;
             this.backgroundPositionX -= dx;
             this.updateRotation();
@@ -663,7 +664,7 @@ class StreetJS {
                 return;
             }
             
-            const step = this.element.clientWidth / 20; // Reduced step for smoother movement
+            const step = this.element.clientWidth / 15; // Reduced step for smoother movement
             
             if (e.key === 'ArrowLeft') {
                 this.animateRotation(-step);
