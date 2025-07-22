@@ -1,6 +1,6 @@
 /**
  * StreetJS - A lightweight, walkable panorama viewer
- * @version 0.2.1
+ * @version 0.2.2
  * @license MIT
  * @author https://github.com/nichind/streetJS
  */
@@ -150,8 +150,8 @@ class StreetJS {
                     transform: translate(-50%, -50%); /* Center the waypoint */
                     cursor: pointer;
                     pointer-events: all;
-                    width: 40px;
-                    height: 40px;
+                    width: 50px;
+                    height: 50px;
                     background-color: rgba(255, 255, 255, 0.15);
                     backdrop-filter: blur(4px);
                     -webkit-backdrop-filter: blur(4px);
@@ -160,7 +160,7 @@ class StreetJS {
                     align-items: center;
                     justify-content: center;
                     color: white;
-                    font-size: 22px;
+                    font-size: 26px;
                     border: 1px solid rgba(255, 255, 255, 0.25);
                     /* Split transitions to avoid animating position changes */
                     transition: background-color 0.3s cubic-bezier(0.23, 1, 0.32, 1),
@@ -173,8 +173,8 @@ class StreetJS {
                 }
                 
                 .street-js-waypoint svg {
-                    width: 22px;
-                    height: 22px;
+                    width: 26px;
+                    height: 26px;
                     fill: rgba(255, 255, 255, 0.9);
                     transition: fill 0.3s ease;
                 }
@@ -958,8 +958,10 @@ class StreetJS {
                 waypoint.element.style.zIndex = Math.max(1, zIndex);
                 
                 // Remove any transform scale that was previously applied
-                // Just keep the centering translation
-                waypoint.element.style.transform = 'translate(-50%, -50%)';
+                // Just keep the centering translation with scale if specified
+                const baseTransform = 'translate(-50%, -50%)';
+                const scale = waypoint.data.scale !== undefined ? waypoint.data.scale : 1;
+                waypoint.element.style.transform = scale !== 1 ? `${baseTransform} scale(${scale})` : baseTransform;
             } else {
                 // Waypoint is not visible
                 waypoint.element.style.opacity = '0';
@@ -1219,8 +1221,14 @@ class StreetJS {
                         fromPx: waypoint.fromPx * scaleRatio,
                         toPx: waypoint.toPx * scaleRatio,
                         height: waypoint.height !== undefined ? waypoint.height : 50,
-                        direction: waypoint.direction
+                        direction: waypoint.direction,
+                        scale: waypoint.scale !== undefined ? Math.max(0.1, Math.min(10, waypoint.scale)) : 1
                     };
+
+                    // Apply custom scale if specified
+                    if (scaledWaypoint.scale !== 1) {
+                        waypointEl.style.transform = `translate(-50%, -50%) scale(${scaledWaypoint.scale})`;
+                    }
 
                     waypointEl.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1330,8 +1338,14 @@ class StreetJS {
                         fromPx: waypoint.fromPx * scaleRatio,
                         toPx: waypoint.toPx * scaleRatio,
                         height: waypoint.height !== undefined ? waypoint.height : 50,
-                        direction: waypoint.direction
+                        direction: waypoint.direction,
+                        scale: waypoint.scale !== undefined ? Math.max(0.1, Math.min(10, waypoint.scale)) : 1
                     };
+
+                    // Apply custom scale if specified
+                    if (scaledWaypoint.scale !== 1) {
+                        waypointEl.style.transform = `translate(-50%, -50%) scale(${scaledWaypoint.scale})`;
+                    }
 
                     waypointEl.addEventListener('click', (e) => {
                         e.stopPropagation();
